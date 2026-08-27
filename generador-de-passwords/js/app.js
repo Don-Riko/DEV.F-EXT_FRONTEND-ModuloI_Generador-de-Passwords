@@ -133,13 +133,20 @@ function generarPassword() {
 // 💪 CÁLCULO DE FUERZA
 // ─────────────────────────────────────────────
 /**
- * Retorna un puntaje 0-4 basado en longitud y variedad.
- *   0 = vacío, 1 = weak, 2 = medium, 3 = strong, 4 = very strong
- *   (el nivel 5 = SUPER STRONG se decide aparte por condición explícita)
+ * Retorna un nivel de fuerza 0-4 (base) según longitud y variedad.
+ * El nivel 5 (SUPER STRONG) se decide aparte por condición explícita.
+ *
+ * Escala base:
+ *   0 = vacío
+ *   1 = FRAGILE (1 barra roja)
+ *   2 = WEAK    (2 barras rojas)
+ *   3 = MEDIUM  (3 barras naranjas)
+ *   4 = STRONG  (4 barras verdes)
  */
 function calcularFuerza(password) {
   if (!password) return 0;
 
+  // Variedad de tipos de caracteres presentes (0-4)
   let variedad = 0;
   if (/[A-Z]/.test(password)) variedad++;
   if (/[a-z]/.test(password)) variedad++;
@@ -147,48 +154,52 @@ function calcularFuerza(password) {
   if (/[^A-Za-z0-9]/.test(password)) variedad++;
 
   const len = password.length;
-  let score = 0;
 
-  // Puntos por longitud
-  if (len >= 8) score++;
-  if (len >= 12) score++;
-  if (len >= 16) score++;
+  // Puntaje bruto por longitud (0-3)
+  let puntosLongitud = 0;
+  if (len >= 6) puntosLongitud = 1;
+  if (len >= 10) puntosLongitud = 2;
+  if (len >= 14) puntosLongitud = 3;
 
-  // Puntos por variedad
-  score += variedad - 1;
+  // Combinamos longitud (0-3) + variedad (0-4) -> total 0-7
+  const total = puntosLongitud + variedad;
 
-  // Normaliza a 1-4
-  score = Math.max(1, Math.min(4, Math.round(score / 1.6)));
+  // Mapeo a la escala 1-4
+  let nivel;
+  if (total <= 2) nivel = 1;      // FRAGILE
+  else if (total <= 3) nivel = 2; // WEAK
+  else if (total <= 5) nivel = 3; // MEDIUM
+  else nivel = 4;                 // STRONG
 
-  // Reglas duras: passwords muy cortas nunca son fuertes
-  if (len < 8) score = 1;
-  else if (len < 12 && score > 2) score = 2;
+  // Regla dura: contraseñas muy cortas nunca pasan de FRAGILE/WEAK
+  if (len < 6) nivel = 1;
+  else if (len < 10 && nivel > 2) nivel = 2;
 
-  return score;
+  return nivel;
 }
 
 // ─────────────────────────────────────────────
 // 🔒 INDICADOR DE FUERZA + CANDADO ANIMADO
 // ─────────────────────────────────────────────
 /**
- * Mapea el puntaje al texto, barras y candado.
- *   1 -> WEAK        -> 💔 candado roto (rojo)
- *   2 -> MEDIUM      -> 🔓 candado abierto (naranja/amarillo)
- *   3 -> STRONG      -> 🔒 candado cerrado (amarillo)
- *   4 -> STRONG+     -> 🔒 candado cerrado brillante (verde)
- *   5 -> SUPER STRONG-> 🔒 candado metálico shiny (azul, 5ª barra visible)
+ * Mapea el nivel al texto, barras y candado. Escala exacta:
+ *   1 -> FRAGILE      -> 1 barra roja      -> 💔 candado roto
+ *   2 -> WEAK         -> 2 barras rojas    -> 🔓 candado abierto
+ *   3 -> MEDIUM       -> 3 barras naranjas -> 🔓 candado abierto
+ *   4 -> STRONG       -> 4 barras verdes   -> 🔒 candado cerrado
+ *   5 -> SUPER STRONG -> 5 barras azules   -> 🔒 candado metálico shiny
  *        Solo si TODAS las opciones están activas y la longitud > 20.
  *
- * @param {number} score  Puntaje 0-4 de calcularFuerza()
+ * @param {number} score  Nivel base 0-4 de calcularFuerza()
  * @param {boolean} esSuper  true si cumple la condición de SUPER STRONG
  */
 function actualizarFuerza(score, esSuper) {
   const niveles = {
     0: { texto: "", barra: "", lock: "lock-none", emoji: "🔓" },
-    1: { texto: "WEAK", barra: "weak", lock: "lock-weak", emoji: "💔" },
-    2: { texto: "MEDIUM", barra: "medium", lock: "lock-medium", emoji: "🔓" },
-    3: { texto: "STRONG", barra: "strong", lock: "lock-strong", emoji: "🔒" },
-    4: { texto: "STRONG", barra: "very-strong", lock: "lock-strong", emoji: "🔒" },
+    1: { texto: "FRAGILE", barra: "fragile", lock: "lock-fragile", emoji: "💔" },
+    2: { texto: "WEAK", barra: "weak", lock: "lock-weak", emoji: "🔓" },
+    3: { texto: "MEDIUM", barra: "medium", lock: "lock-medium", emoji: "🔓" },
+    4: { texto: "STRONG", barra: "strong", lock: "lock-strong", emoji: "🔒" },
     5: { texto: "SUPER STRONG", barra: "super-strong", lock: "lock-super", emoji: "🔒" },
   };
 
@@ -214,7 +225,8 @@ function actualizarFuerza(score, esSuper) {
   // Tooltip descriptivo
   const titulos = {
     "lock-none": "Genera una contraseña",
-    "lock-weak": "Débil: candado roto 💔",
+    "lock-fragile": "Frágil: candado roto 💔",
+    "lock-weak": "Débil: candado abierto 🔓",
     "lock-medium": "Media: candado abierto 🔓",
     "lock-strong": "Fuerte: candado cerrado 🔒",
     "lock-super": "SÚPER fuerte: candado metálico 🔒 (todas las opciones + más de 20 caracteres)",

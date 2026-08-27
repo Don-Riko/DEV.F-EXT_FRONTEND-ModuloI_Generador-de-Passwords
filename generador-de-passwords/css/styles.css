@@ -145,14 +145,25 @@ body {
   --lock-color: #56546a;
 }
 
-.lock-indicator.lock-weak {
+/* FRAGILE: candado roto, rojo e inclinado */
+.lock-indicator.lock-fragile {
   --lock-color: var(--danger);
   border-color: var(--danger);
   box-shadow: 0 0 14px -1px var(--danger);
   transform: rotate(-8deg) scale(1.02);
 }
-.lock-indicator.lock-weak .lock-emoji { filter: grayscale(0) drop-shadow(0 0 4px rgba(246,74,74,0.6)); }
+.lock-indicator.lock-fragile .lock-emoji { filter: grayscale(0) drop-shadow(0 0 4px rgba(246,74,74,0.6)); }
 
+/* WEAK: candado abierto, rojo-anaranjado */
+.lock-indicator.lock-weak {
+  --lock-color: var(--orange);
+  border-color: var(--orange);
+  box-shadow: 0 0 14px -1px var(--orange);
+  transform: rotate(-4deg) scale(1.03);
+}
+.lock-indicator.lock-weak .lock-emoji { filter: grayscale(0) drop-shadow(0 0 4px rgba(251,124,88,0.6)); }
+
+/* MEDIUM: candado abierto, naranja/amarillo */
 .lock-indicator.lock-medium {
   --lock-color: var(--yellow);
   border-color: var(--yellow);
@@ -427,31 +438,35 @@ body {
   transform: scaleY(1);
 }
 
-/* Estados de barras (color según nivel) */
-.strength-bars.weak .bar:nth-child(-n+1),
-.strength-bars.medium .bar:nth-child(-n+2),
-.strength-bars.strong .bar:nth-child(-n+3),
-.strength-bars.very-strong .bar:nth-child(-n+4) {
-  border-color: transparent;
-}
+/* ── Estados de barras (cantidad + color según nivel) ──
+   FRAGILE      -> 1 barra roja
+   WEAK         -> 2 barras rojas
+   MEDIUM       -> 3 barras naranjas
+   STRONG       -> 4 barras verdes
+   SUPER STRONG -> 5 barras azules
+*/
 
-/* SUPER STRONG: las 5 barras pierden su borde gris */
+/* Las barras activas pierden el borde gris */
+.strength-bars.fragile .bar:nth-child(-n+1),
+.strength-bars.weak .bar:nth-child(-n+2),
+.strength-bars.medium .bar:nth-child(-n+3),
+.strength-bars.strong .bar:nth-child(-n+4),
 .strength-bars.super-strong .bar:nth-child(-n+5) {
   border-color: transparent;
 }
 
-.strength-bars.weak .bar:nth-child(-n+1) { background: var(--danger); border-color: var(--danger); }
-.strength-bars.medium .bar:nth-child(-n+2) { background: var(--orange); border-color: var(--orange); }
-.strength-bars.strong .bar:nth-child(-n+3) { background: var(--yellow); border-color: var(--yellow); }
-.strength-bars.very-strong .bar:nth-child(-n+4) { background: var(--accent); border-color: var(--accent); }
-/* SUPER STRONG: 5 barras azules */
+/* Relleno de color por nivel */
+.strength-bars.fragile .bar:nth-child(-n+1) { background: var(--danger); border-color: var(--danger); }
+.strength-bars.weak .bar:nth-child(-n+2) { background: var(--danger); border-color: var(--danger); }
+.strength-bars.medium .bar:nth-child(-n+3) { background: var(--orange); border-color: var(--orange); }
+.strength-bars.strong .bar:nth-child(-n+4) { background: var(--accent); border-color: var(--accent); }
 .strength-bars.super-strong .bar:nth-child(-n+5) { background: var(--blue); border-color: var(--blue); }
 
 /* Color del texto según nivel */
+.strength-text.fragile { color: var(--danger); }
 .strength-text.weak { color: var(--danger); }
 .strength-text.medium { color: var(--orange); }
-.strength-text.strong { color: var(--yellow); }
-.strength-text.very-strong { color: var(--accent); }
+.strength-text.strong { color: var(--accent); }
 .strength-text.super-strong { color: var(--blue); }
 
 /* ── Botón generar ── */

@@ -192,8 +192,9 @@ function actualizarFuerza(score, esSuper) {
     5: { texto: "SUPER STRONG", barra: "super-strong", lock: "lock-super", emoji: "🔒" },
   };
 
-  // Ascenso al nivel 5 (SUPER STRONG) solo si cumple la condición explícita
-  if (esSuper && score >= 4) {
+  // Ascenso al nivel 5 (SUPER STRONG) si cumple la condición explícita
+  // (todas las opciones activas + longitud > 20). No depende del score base.
+  if (esSuper) {
     score = 5;
   }
 

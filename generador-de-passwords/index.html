@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🔐 Password Generator - DEV.F Módulo I (DOM)</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <main class="app">
+    <h1 class="app-title">Password Generator</h1>
+
+    <!-- Campo de la contraseña generada + copiar + candado -->
+    <section class="password-display">
+      <input
+        type="text"
+        id="passwordOutput"
+        class="password-output"
+        readonly
+        placeholder="P4$5W0rD!"
+        aria-label="Contraseña generada"
+      />
+
+      <div class="display-actions">
+        <span class="copied-msg" id="copiedMsg" aria-live="polite"></span>
+
+        <button id="btnCopy" class="btn-copy" title="Copiar contraseña" aria-label="Copiar contraseña">
+          <!-- icono copiar -->
+          <svg width="21" height="24" viewBox="0 0 21 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M20.341 3.091 17.909.659A2.25 2.25 0 0 0 16.319 0H8.25A2.25 2.25 0 0 0 6 2.25V4.5H2.25A2.25 2.25 0 0 0 0 6.75v15A2.25 2.25 0 0 0 2.25 24h10.5A2.25 2.25 0 0 0 15 21.75V19.5h3.75A2.25 2.25 0 0 0 21 17.25V4.682a2.25 2.25 0 0 0-.659-1.591ZM12.469 21.75H2.53a.281.281 0 0 1-.281-.281V7.03a.281.281 0 0 1 .281-.281H6v10.5a2.25 2.25 0 0 0 2.25 2.25h4.5v1.969a.281.281 0 0 1-.281.281Zm6-4.5H8.53a.281.281 0 0 1-.281-.281V2.53a.281.281 0 0 1 .281-.281H13.5v3.375c0 .621.504 1.125 1.125 1.125H18v10.219a.281.281 0 0 1-.281.281ZM18.75 4.5h-3V1.5h.531a.75.75 0 0 1 .53.22L18.53 3.97a.75.75 0 0 1 .22.53V4.5Z" fill="currentColor"/>
+          </svg>
+        </button>
+
+        <!-- 🔒 Indicador de fuerza tipo candado (a la derecha del campo) -->
+        <div
+          id="lockIndicator"
+          class="lock-indicator lock-none"
+          title="Fuerza de la contraseña"
+          aria-label="Indicador de fuerza"
+        >
+          <span class="lock-emoji" id="lockEmoji" aria-hidden="true">🔓</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Controles -->
+    <section class="controls">
+      <!-- Longitud -->
+      <div class="control-row length-row">
+        <label for="lengthSlider" class="control-label">Character Length</label>
+        <span class="length-value" id="lengthValue">10</span>
+      </div>
+      <input
+        type="range"
+        id="lengthSlider"
+        class="slider"
+        min="4"
+        max="32"
+        value="10"
+        aria-label="Longitud de la contraseña"
+      />
+
+      <!-- Opciones -->
+      <fieldset class="options">
+        <legend class="visually-hidden">Opciones de caracteres</legend>
+
+        <label class="option">
+          <input type="checkbox" id="optUpper" checked />
+          <span class="checkmark" aria-hidden="true"></span>
+          <span class="option-text">Include Uppercase Letters</span>
+        </label>
+
+        <label class="option">
+          <input type="checkbox" id="optLower" checked />
+          <span class="checkmark" aria-hidden="true"></span>
+          <span class="option-text">Include Lowercase Letters</span>
+        </label>
+
+        <label class="option">
+          <input type="checkbox" id="optNumbers" checked />
+          <span class="checkmark" aria-hidden="true"></span>
+          <span class="option-text">Include Numbers</span>
+        </label>
+
+        <label class="option">
+          <input type="checkbox" id="optSymbols" />
+          <span class="checkmark" aria-hidden="true"></span>
+          <span class="option-text">Include Symbols</span>
+        </label>
+      </fieldset>
+
+      <!-- Fuerza -->
+      <div class="strength">
+        <span class="strength-label">STRENGTH</span>
+        <div class="strength-value">
+          <span class="strength-text" id="strengthText"></span>
+          <div class="strength-bars" id="strengthBars" aria-hidden="true">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botón generar -->
+      <button id="btnGenerate" class="btn-generate">
+        GENERATE
+        <svg width="12" height="12" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="m5.106 12-1.265-1.265 4.226-4.227H0V4.68h8.067L3.842.453 5.106-.813 11.518 5.6 5.106 12Z" transform="translate(0 .813)" fill="currentColor"/>
+        </svg>
+      </button>
+
+      <!-- Mensaje de error de opciones -->
+      <p class="options-error" id="optionsError" aria-live="polite"></p>
+    </section>
+
+    <footer class="app-footer">
+      Hecho con 🔐 para
+      <a href="https://github.com/Don-Riko/DEV.F-EXT_FRONTEND-ModuloI_Generador-de-Passwords" target="_blank" rel="noopener">DEV.F - Frontend Módulo I (DOM)</a>
+    </footer>
+  </main>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

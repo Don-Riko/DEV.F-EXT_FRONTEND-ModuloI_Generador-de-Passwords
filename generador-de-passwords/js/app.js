@@ -119,7 +119,13 @@ function generarPassword() {
   const password = mezclar(chars).slice(0, longitud).join("");
 
   passwordOutput.value = password;
-  actualizarFuerza(calcularFuerza(password));
+
+  // Condición de SUPER STRONG: TODAS las opciones activas + longitud > 20
+  const todasLasOpciones =
+    optUpper.checked && optLower.checked && optNumbers.checked && optSymbols.checked;
+  const esSuper = todasLasOpciones && longitud > 20;
+
+  actualizarFuerza(calcularFuerza(password), esSuper);
   resetCopiado();
 }
 
@@ -129,6 +135,7 @@ function generarPassword() {
 /**
  * Retorna un puntaje 0-4 basado en longitud y variedad.
  *   0 = vacío, 1 = weak, 2 = medium, 3 = strong, 4 = very strong
+ *   (el nivel 5 = SUPER STRONG se decide aparte por condición explícita)
  */
 function calcularFuerza(password) {
   if (!password) return 0;
@@ -165,19 +172,30 @@ function calcularFuerza(password) {
 // ─────────────────────────────────────────────
 /**
  * Mapea el puntaje al texto, barras y candado.
- *   1 -> WEAK    -> 🔓💔 candado roto (rojo)
- *   2 -> MEDIUM  -> 🔓 candado abierto (naranja/amarillo)
- *   3 -> STRONG  -> 🔒 candado cerrado (amarillo)
- *   4 -> STRONG+ -> 🔒 candado cerrado brillante (verde)
+ *   1 -> WEAK        -> 💔 candado roto (rojo)
+ *   2 -> MEDIUM      -> 🔓 candado abierto (naranja/amarillo)
+ *   3 -> STRONG      -> 🔒 candado cerrado (amarillo)
+ *   4 -> STRONG+     -> 🔒 candado cerrado brillante (verde)
+ *   5 -> SUPER STRONG-> 🔒 candado metálico shiny (azul, 5ª barra visible)
+ *        Solo si TODAS las opciones están activas y la longitud > 20.
+ *
+ * @param {number} score  Puntaje 0-4 de calcularFuerza()
+ * @param {boolean} esSuper  true si cumple la condición de SUPER STRONG
  */
-function actualizarFuerza(score) {
+function actualizarFuerza(score, esSuper) {
   const niveles = {
     0: { texto: "", barra: "", lock: "lock-none", emoji: "🔓" },
     1: { texto: "WEAK", barra: "weak", lock: "lock-weak", emoji: "💔" },
     2: { texto: "MEDIUM", barra: "medium", lock: "lock-medium", emoji: "🔓" },
     3: { texto: "STRONG", barra: "strong", lock: "lock-strong", emoji: "🔒" },
     4: { texto: "STRONG", barra: "very-strong", lock: "lock-strong", emoji: "🔒" },
+    5: { texto: "SUPER STRONG", barra: "super-strong", lock: "lock-super", emoji: "🔒" },
   };
+
+  // Ascenso al nivel 5 (SUPER STRONG) solo si cumple la condición explícita
+  if (esSuper && score >= 4) {
+    score = 5;
+  }
 
   const nivel = niveles[score] || niveles[0];
 
@@ -198,6 +216,7 @@ function actualizarFuerza(score) {
     "lock-weak": "Débil: candado roto 💔",
     "lock-medium": "Media: candado abierto 🔓",
     "lock-strong": "Fuerte: candado cerrado 🔒",
+    "lock-super": "SÚPER fuerte: candado metálico 🔒 (todas las opciones + más de 20 caracteres)",
   };
   lockIndicator.title = titulos[nivel.lock] || "";
 }
